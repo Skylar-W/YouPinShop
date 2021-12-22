@@ -4,6 +4,7 @@
 import axios from 'axios'
 import nProgress from 'nprogress'
 import "nprogress/nprogress.css"
+import store from "@/store"
 //创建axios实例并进行基本配置
 const reqt = axios.create({
   baseURL: '/api',
@@ -12,6 +13,14 @@ const reqt = axios.create({
 
 //请求拦截器: 在请求发出之前进行拦截,并处理一些业务
 reqt.interceptors.request.use((config) => {
+  //游客身份校验
+  if(store.state.detail.uuid_token) {
+    config.headers.userTempId = store.state.detail.uuid_token
+  }
+  //携带token给服务器请求登录用户的信息(对比身份信息)
+  if(store.state.user.token) {
+    config.headers.token = store.state.user.token
+  }
   //config配置对象里面包含一个重要属性----headers请求头
   nProgress.start()
   return config

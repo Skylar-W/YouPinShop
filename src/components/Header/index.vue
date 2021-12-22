@@ -5,10 +5,16 @@
       <div class="container">
         <div class="loginList">
           <p>优品购欢迎您！</p>
-          <p>
+          <!-- 还未登录状态 -->
+          <p v-if="!userName">
             <span>请</span>
-            <a href="#">登录</a>
-            <a href="#" class="register">免费注册</a>
+            <router-link to="/login">登录</router-link>
+            <router-link to="/register" class="register">免费注册</router-link>
+          </p>
+          <!-- 已经登录后 -->
+          <p v-else>
+            <a href="">{{userName}}</a>
+            <a href="" class="register" @click="logout">退出登录</a>
           </p>
         </div>
         <div class="typeList">
@@ -26,9 +32,9 @@
     <!--头部第二行 搜索区域-->
     <div class="bottom">
       <h1 class="logoArea">
-        <a class="logo" title="优品购" href="#" target="_blank">
-          <img src="./images/YPshop.png" alt="优品购网站"/>
-        </a>
+        <router-link to="/home" class="logo" title="优品购" >
+          <img src="./images/YPshop.png" alt="优品购网站" />
+        </router-link>
       </h1>
       <div class="searchArea">
         <form action="#" class="searchForm">
@@ -38,8 +44,12 @@
             class="input-error input-xxlarge"
             v-model="keyword"
           />
-          <button class="sui-btn btn-xlarge btn-danger" type="button" @click="goSearch">
-            搜索
+          <button
+            class="sui-btn btn-xlarge btn-danger"
+            type="button"
+            @click="goSearch"
+          >
+            搜 索
           </button>
         </form>
       </div>
@@ -49,129 +59,146 @@
 
 <script>
 export default {
-  name: '',
+  name: "",
   data() {
     return {
-      keyword: ''
-    }
+      keyword: "",
+    };
   },
   methods: {
     goSearch() {
       //路由传参
-      //1.字符串形式 
+      //1.字符串形式
       // this.$router.push('/search/' + this.keyword + '?k=' + this.keyword.toUpperCase())
-      
+
       //2.模板字符串
       // this.$router.push(`/search/${this.keyword}?k=${this.keyword.toUpperCase()}`)
 
       //3.对象的形式,如果有query参数需要一并带上
-      if(this.$route.query) {
-        let location = {name: 'search', params: {keyword: this.keyword || undefined}}
-        location.query = this.$route.query
-        this.$router.push(location)
+      if (this.$route.query) {
+        let location = {
+          name: "search",
+          params: { keyword: this.keyword || undefined },
+        };
+        location.query = this.$route.query;
+        this.$router.push(location);
       }
-     }
+    },
+    async logout() {//退出登录
+      try {
+        await this.$store.dispatch('userLogout')
+        this.$router.push('/home')
+      } catch(err) {
+        alert(err.message)
+      }
+    }
   },
   mounted() {
-    this.$bus.$on('clear', () => {
-      this.keyword = ''
-    })
-  }
+    this.$bus.$on("clear", () => {
+      this.keyword = "";
+    });
+  },
+  computed: {
+    //用户名信息
+    userName() {
+      return this.$store.state.user.userInfo.name;
+    },
+  },
 };
 </script>
 
 <style lang="less" scoped>
-  .header {
-    & > .top {
-      background-color: #eaeaea;
-      height: 30px;
-      line-height: 30px;
+.header {
+  & > .top {
+    background-color: #eaeaea;
+    height: 30px;
+    line-height: 30px;
 
-      .container {
-        width: 1200px;
-        margin: 0 auto;
-        overflow: hidden;
-
-        .loginList {
-          float: left;
-
-          p {
-            float: left;
-            margin-right: 10px;
-
-            .register {
-              border-left: 1px solid #b3aeae;
-              padding: 0 5px;
-              margin-left: 5px;
-            }
-          }
-        }
-
-        .typeList {
-          float: right;
-
-          a {
-            padding: 0 10px;
-
-            & + a {
-              border-left: 1px solid #b3aeae;
-            }
-          }
-        }
-      }
-    }
-
-    & > .bottom {
+    .container {
       width: 1200px;
       margin: 0 auto;
       overflow: hidden;
 
-      .logoArea {
+      .loginList {
         float: left;
 
-        .logo {
-          img {
-            width: 136px;
-            margin: 25px 45px;
+        p {
+          float: left;
+          margin-right: 10px;
+
+          .register {
+            border-left: 1px solid #b3aeae;
+            padding: 0 5px;
+            margin-left: 5px;
           }
         }
       }
 
-      .searchArea {
+      .typeList {
         float: right;
-        margin-top: 35px;
 
-        .searchForm {
-          overflow: hidden;
+        a {
+          padding: 0 10px;
 
-          input {
-            box-sizing: border-box;
-            width: 490px;
-            height: 32px;
-            padding: 0px 4px;
-            border: 2px solid #ea4a36;
-            float: left;
-
-            &:focus {
-              outline: none;
-            }
-          }
-
-          button {
-            height: 32px;
-            width: 68px;
-            background-color: #ea4a36;
-            border: none;
-            color: #fff;
-            float: left;
-            cursor: pointer;
-
-            &:focus {
-              outline: none;
-            }
+          & + a {
+            border-left: 1px solid #b3aeae;
           }
         }
       }
     }
   }
+
+  & > .bottom {
+    width: 1200px;
+    margin: 0 auto;
+    overflow: hidden;
+
+    .logoArea {
+      float: left;
+
+      .logo {
+        img {
+          width: 136px;
+          margin: 25px 45px;
+        }
+      }
+    }
+
+    .searchArea {
+      float: right;
+      margin-top: 35px;
+
+      .searchForm {
+        overflow: hidden;
+
+        input {
+          box-sizing: border-box;
+          width: 490px;
+          height: 32px;
+          padding: 0px 4px;
+          border: 2px solid #e2520f;
+          float: left;
+
+          &:focus {
+            outline: none;
+          }
+        }
+
+        button {
+          height: 32px;
+          width: 68px;
+          background-color: #e24336;
+          border: none;
+          color: #fff;
+          float: left;
+          cursor: pointer;
+
+          &:focus {
+            outline: none;
+          }
+        }
+      }
+    }
+  }
+}
 </style>

@@ -3,6 +3,9 @@ import Vuex from "vuex"
 import home from "./home"
 import search from "./search"
 import detail from "./detail"
+import shopCart from "./shopCart"
+import user from "./user"
+import trade from "./trade"
 
 Vue.use(Vuex)
 //导出Vuex的Store类实例
@@ -11,6 +14,9 @@ export default new Vuex.Store({
   modules: {
     home,
     search,
-    detail
+    detail,
+    shopCart,
+    user,
+    trade
   }
 })
